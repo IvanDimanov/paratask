@@ -6,7 +6,11 @@ __Warning:__ This means that your task function will be able to get only a non-f
 
 
 ## Install
-Duo to [npm](http://npmjs.org) current malfunction, you can get Paratask from [this repo](https://github.com/IvanDimanov/paratask).
+You can install Paratask with the Node Package Manager:
+```shell
+npm install paratask
+```
+or by getting it from [this repo](https://github.com/IvanDimanov/paratask).
 
 ## Dependencies
 Paratask uses only general Node.js modules that do not need additional installation: `fs` and `child_process`.
@@ -49,9 +53,6 @@ paratask([ task_1, task_2 ], function (error, results) {
   console.log( results );  // [100, 200], 1st task result will be always the 1st in the results array even if completed last
 });
 ```
-
-
-
 
 
 Both `task_1` and `task_2` will fork a Node.js process but
