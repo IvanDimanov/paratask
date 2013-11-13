@@ -1,0 +1,1 @@
+The folder 'shared_data' holds JSON files which are used to share data between processes.
