@@ -1,6 +1,7 @@
 # Paratask - Node.js Parallel Tasks Manager
 Paratask is a tool that will execute your JavaScript code in __parallel__ using the full potential of multi-process programming.
 In contrast to asynchronous task management, Paratask will create a child Node.js process in which your task will "live".
+
 __Warning:__ This means that your task function will be able to get only a non-functional context dependencies. More into in the examples below.
 
 
@@ -18,6 +19,7 @@ Paratask uses only general Node.js modules that do not need additional installat
 Both `task_1` and `task_2` will fork a Node.js process,
 execute their functions and when both call `callback()`,
 the final error state and results will be printed in the console.
+
 __Warning:__ `context` property can only be a valid `JSON.parse()` value (i.e. no functions allowed).
 
 ```javascript
@@ -52,10 +54,14 @@ paratask([ task_1, task_2 ], function (error, results) {
 ```
 
 
+
+
+
 Both `task_1` and `task_2` will fork a Node.js process but
 from the moment when `task_2` call `callback('Error message')`
 both processes will be killed and the final callback will be executed,
 printing the 1st occurred error and the results array in the moment of error occurrence.
+
 __Note:__ `context` property is optional.
 
 ```javascript
