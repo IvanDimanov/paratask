@@ -5,6 +5,7 @@
 
 var paratask = require('../index.js');
 
+
 module.exports = {
   'Test the 1st example from the "readme.md"': function (test) {
 
