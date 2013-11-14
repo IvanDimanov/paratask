@@ -1,6 +1,6 @@
 {
   "name"        : "paratask",
-  "version"     : "0.1.1",
+  "version"     : "0.1.2",
   "author"      : "Ivan Dimanov <mail@idimanov.com>",
   "description" : "Paratask is a tool that will execute your JavaScript code in parallel using the full potential of multi-process programming. In contrast to asynchronous task management, Paratask will create a child Node.js process in which your task will 'live'.",
   "contributors": [ 
@@ -10,12 +10,17 @@
     } 
   ],
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test" : "grunt nodeunit"
   },
   "main": "index.js",
   "repository": {
     "type": "git",
     "url" : "https://github.com/IvanDimanov/paratask.git"
+  },
+  "devDependencies": {
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt"                 : "~0.4.1"
   },
   "keywords": [
     "parallel",
@@ -24,6 +29,6 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=0.10"
+    "node": ">=0.8"
   }
 }
