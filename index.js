@@ -139,6 +139,15 @@ function paratask(tasks, finalCallback) {
     child_processes[ child_process_id ].on('close', function () {
       if (!--total_uncompleted_tasks) finalCallback( error, results );
     });
+
+
+    /*Clear process settings in all cases*/
+    child_processes[ child_process_id ].on('disconnect', function () {
+      killProcess( child_process_id );
+    });
+    child_processes[ child_process_id ].on('exit', function () {
+      killProcess( child_process_id );
+    });
   });
 }
 
