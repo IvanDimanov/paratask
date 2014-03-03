@@ -21,7 +21,7 @@ process.on('message', function (message) {
   shared_data_json      = {};
 
   /*
-    Event if there's no need for specific function context,
+    Even if there's no need for specific function context,
     having a valid JSON context description is crucial for the fork function execution
   */
   try {
@@ -29,6 +29,10 @@ process.on('message', function (message) {
   } catch (error) {
     throw new error;
   }
+
+
+  /*This process is the only who'll use the data*/
+  fs.unlinkSync( shared_data_file_path );
 
 
   /*Find the fork function that will be executed, its function body, and the context it depend on*/

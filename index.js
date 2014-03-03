@@ -66,6 +66,18 @@ function paratask(tasks, finalCallback) {
   total_uncompleted_tasks = utils.objectLength( tasks );
 
 
+  /*Please note that setting an empty folder by removing & creating will cause permission issue*/
+  function removeAllFilesFromSharedFolder() {
+    utils.each( fs.readdirSync( SHARED_DATA_FOLDER_PATH ), function (file_path) {
+      fs.unlinkSync( SHARED_DATA_FOLDER_PATH + file_path );
+    });
+  }
+
+
+  /*Set clear all previously used files*/
+  removeAllFilesFromSharedFolder();
+
+
   /*Common function for killing any spawn child process and removing any records assign with it*/
   function killProcess(child_process_id) {
 
@@ -102,15 +114,14 @@ function paratask(tasks, finalCallback) {
       context    : task.context
     };
 
-    /*Send the instructions oly if all are been correctly recorded*/
-    fs.writeFile( shared_data_file_paths[ child_process_id ], JSON.stringify( shared_data_json ), function (error) {
-      if (error) {
-        child_processes[ child_process_id ].kill();
-        throw new error;
-      } else {
-        child_processes[ child_process_id ].send({shared_data_file_path: shared_data_file_paths[ child_process_id ]});
-      }
-    });
+    /*Send the instructions only if all are been correctly recorded*/
+    var file_error = fs.writeFileSync( shared_data_file_paths[ child_process_id ], JSON.stringify( shared_data_json ));
+    if (file_error) {
+      child_processes[ child_process_id ].kill();
+      throw new file_error;
+    } else {
+      child_processes[ child_process_id ].send({shared_data_file_path: shared_data_file_paths[ child_process_id ]});
+    }
 
 
     /*Wait for any process update of the sent task*/
@@ -137,7 +148,12 @@ function paratask(tasks, finalCallback) {
 
     /*Notify the end-user whenever all of the child processes are been completed (or canceled)*/
     child_processes[ child_process_id ].on('close', function () {
-      if (!--total_uncompleted_tasks) finalCallback( error, results );
+      if (!--total_uncompleted_tasks) {
+        finalCallback( error, results );
+
+        /*Secure clean space after work*/
+        removeAllFilesFromSharedFolder();
+      }
     });
 
 

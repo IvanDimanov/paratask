@@ -1,7 +1,7 @@
 /**
  * Common set of general purpose JS functions.
  * They will be directly exported if 'module.exports' is been provided as Node.js or
- * will 
+ * will overwrite 'window.utils' as object properties
  */
  (function () {
     'use strict';
@@ -15,7 +15,7 @@
 
     /*Remove spaces from both string ends*/
     function trim(str) {
-        return str.replace(/^\s+|\s+$/g, '');
+        return typeof str == 'string' ? str.replace(/^\s+|\s+$/g, '') : '';
     }
 
 
@@ -74,6 +74,17 @@
 
 
     /**
+     * Check if the incoming 'float_number' is a floating point number
+     * 
+     * @dependences
+     *     isNumber()
+     */
+    function isFloat(float_number) {
+        return isNumber(float_number) && (float_number % 1);
+    }
+
+
+    /**
      * Check if the incoming 'int' is an Integer number
      * 
      * @dependences
@@ -95,11 +106,11 @@
      *     isNumber()
      * 
      * @example
-     *   setDigits(7   , 3)    => '007'
+     *   setDigits( 7  , 3)    => '007'
      *   setDigits('7' , 3)    => '007'
      *   setDigits('70', 3)    => '070'
      *   setDigits('a7', 3)    => 'a7'
-     *   setDigits(7   , 'a3') => 7
+     *   setDigits( 7  , 'a3') => 7
      * 
      */
     function setDigits(n, digets) {
@@ -174,6 +185,199 @@
 
 
     /**
+     * Will search for the Greatest Common Divisor for any given 2 numbers
+     * http://en.wikipedia.org/wiki/Greatest_common_divisor
+     * 
+     * @dependencies
+     *   isNumber
+     * 
+     * @example
+     *   greatestCommonDivisor( 8    , 12 )  =>  4
+     *   greatestCommonDivisor( 0.750, 10 )  =>  0.25
+     */
+    function greatestCommonDivisor(number_1, number_2) {
+
+      /*Number types check-in*/
+      if (!isNumber(number_1) || !isNumber(number_2)) return NaN
+
+      /*Keep dividing till we find the exact divisor number as 'number_1'*/
+      var temp_number_1;
+      while (number_2) {
+        temp_number_1 = number_1;
+        number_1      = number_2;
+        number_2      = temp_number_1 % number_2;
+      }
+
+      return number_1;
+    }
+
+
+    /**
+     * Convert any floating point number to a fractional string 
+     * 
+     * @dependencies
+     *   isNumber
+     *   isInteger
+     *   isFloat
+     * 
+     * @example
+     *   floatToFraction( 0.750 )  =>  "3/4"
+     *   floatToFraction( 15.12 )  =>  "378/25"
+     */
+    function floatToFraction(float_number) {
+
+      /*Floating number types check*/
+      if (!isNumber( float_number )) return NaN;
+
+      /*"Easy" integer cases check*/
+      if (isInteger( float_number )) return float_number +'/1';
+
+
+      /*
+          Perform the calculation using only positive numbers
+          so keeping the 'float_number' sign is important
+      */
+      var sign = float_number < 0 ? '-' : '';
+      float_number = Math.abs( float_number );
+
+
+      var
+      primal_numerator,
+      primal_denominator = 1;
+
+      /*Convert from floating to 2 integer fractional numbers*/
+      while (isFloat(float_number)) {
+        float_number        *= 10;
+        primal_numerator     = Math.floor( float_number );
+        primal_denominator  *= 10;
+      }
+
+      /*Find the GCD for both integer fractions*/
+      var gcd = greatestCommonDivisor( primal_numerator, primal_denominator );
+
+      /*Give the simplest fraction possible*/
+      return sign + primal_numerator/gcd +'/'+ primal_denominator/gcd;
+    }
+ 
+
+    /**
+     * Will return the power of the 'number_in_power' for a given 'base_number' using custom logarithm.
+     * More info at https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log => 'getBaseLog(x, y)'
+     * 
+     * @dependences:
+     *     isNumber
+     * 
+     * @param  {Number} base_number
+     * @param  {Number} number_in_power
+     * @return {Mixed}                  Will return either the power as {Number} or 'NaN' for any invalid input.
+     *
+     * @examples
+     *     getPowerLog( 2 , -1)  =>  NaN
+     *     getPowerLog('3','a')  =>  NaN
+     *     getPowerLog( 2 ,  0)  =>  -Infinity
+     *     getPowerLog( 2 ,  8)  =>  3
+     *     getPowerLog( 2 , 16)  =>  4
+     *     getPowerLog( 3 ,  9)  =>  2
+     *     getPowerLog('3',  9)  =>  2
+     */
+    function getPowerLog(base_number, number_in_power) {
+        if (!isNumber(base_number) || !isNumber(number_in_power)) return NaN;
+        return Math.log( number_in_power ) / Math.log( base_number );
+    }
+
+
+
+    /*
+      Will convert any number 'converting_number' knowing its base as 'base_from' and
+      will return its 'converted_number' to the requested base 'base_to'.
+
+      @dependencies:
+        isInteger
+
+      @examples:
+        convertNumberBase()              =>  NaN
+        convertNumberBase(  10,  0, 16)  =>  NaN
+        convertNumberBase(  10, -2, 16)  =>  NaN
+        convertNumberBase('FF', 10, 16)  =>  NaN
+        convertNumberBase('FF', 16, 16)  =>  FF
+        convertNumberBase(   0,  2, 10)  =>  0
+        convertNumberBase(1100,  2, 10)  =>  12
+        convertNumberBase(  10, 10, 16)  =>  A
+        convertNumberBase( -10, 10, 16)  =>  -A
+        convertNumberBase('FF', 16, 10)  =>  255
+
+      Special thanks to Dr Zhihua Lai
+      http://rot47.net/_js/convert.js
+    */
+    function convertNumberBase(converting_number, base_from, base_to) {
+
+      /*Complete converting alphabet*/
+      var MAX_BASE_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+      /*Validate converting bases*/
+      if (!isInteger( base_from ) || base_from <= 0) return NaN;
+      if (!isInteger( base_to   ) || base_to   <= 0) return NaN;
+
+
+      /*Detect common cases*/
+      if (!converting_number  ) return 0;
+      if (base_from == base_to) return converting_number;
+
+
+      base_from *= 1;
+      base_to   *= 1;
+
+      /*Will help presenting negative numbers*/
+      var number_sign = '';
+      if (converting_number < 0) {
+        number_sign       = '-';
+        converting_number = Math.abs( converting_number );
+      }
+
+      var converting_number_chars = converting_number +'';
+
+
+      /*Out of range basing*/
+      if (base_from > MAX_BASE_CHARS.length) return NaN;
+      if (base_to   > MAX_BASE_CHARS.length) return NaN;
+
+
+      /*Create sub-alphabets for both converting bases*/
+      var
+      base_from_chars = MAX_BASE_CHARS.slice(0, base_from),
+      base_to_chars   = MAX_BASE_CHARS.slice(0, base_to  ),
+
+      base_from_chars_length = base_from_chars.length,
+      base_to_chars_length   = base_to_chars.length;
+
+
+      /*Convert the 'converting_number' characters into respective integer value*/
+      var converting_number_int = 0;
+      for (var i = 0; i < converting_number_chars.length; ++i) {
+        converting_number_int = converting_number_int * base_from_chars_length + base_from_chars.indexOf( converting_number_chars.charAt(i) );
+      }
+
+      /*Base conversion check*/
+      if (converting_number_int < 0) return NaN;
+
+      /*Keep chunking off till we convert all 'converting_number_int' into 'converted_number'*/
+      var
+      base_to_char         = converting_number_int % base_to_chars_length,
+      converted_number     = base_to_chars.charAt( base_to_char ),
+      base_from_chars_left = Math.floor(converting_number_int / base_to_chars_length);
+
+      while (base_from_chars_left) {
+        base_to_char         = base_from_chars_left % base_to_chars_length;
+        base_from_chars_left = Math.floor(base_from_chars_left / base_to_chars_length);
+        converted_number     = base_to_chars.charAt( base_to_char ) + converted_number;
+      }
+
+      return number_sign + converted_number;
+    }
+
+
+
+    /**
      * Always return an Array with a structure as maximum as close to the incoming obj structure
      */
     function toArray(obj) {
@@ -195,7 +399,7 @@
 
 
     /*Gives the total number of private object keys*/
-    var objectLength = function (obj) {
+    function objectLength(obj) {
 
         /*Input validation*/
         if (typeof obj != 'object') return 0;
@@ -207,7 +411,20 @@
         }
 
         return length;
-    };
+    }
+
+
+    /*
+        Instead of throwing an error for every invalid JSON string
+        this function will safely return a JSON object, or "undefined object"
+    */
+    function JSON_parse(json_string) {
+        try {
+            return JSON.parse( json_string );
+        } catch(error) {
+            return undefined;
+        }
+    }
 
 
     /**
@@ -259,37 +476,126 @@
 
 
     /**
-     * Common function to iterate through an Array or Object elements.
-     * If the callback function return false all iteration will be stopped.
+     * Will take common case "Camel" style and return "Underscored" style string
+     * @example
+     *   camelCaseToUnderscore('myClassHTTP_Var1'   )  =>  "my_class_http_var1"
+     *   camelCaseToUnderscore('__ClassHTTP_Var1'   )  =>  "class_http_var1"
+     *   camelCaseToUnderscore('MyClass+-/*HTTPVar1')  =>  "my_class_+-/*_httpvar1"
+     *   camelCaseToUnderscore({})  =>  ""
+     *   camelCaseToUnderscore()    =>  ""
+     */
+    function camelCaseToUnderscore(camel_case_string) {
+      if (typeof camel_case_string != 'string') return '';
+
+      var underscore = camel_case_string.replace(/[ ]+/g, '_');
+
+      underscore = underscore.replace(/([A-Z]+)([a-z0-9]*)/g, function (match) {
+        return '_'+ match.toLowerCase() +'_';
+      });
+
+      underscore = underscore.replace(/[_]{2,}/g, '_');
+
+      underscore = underscore.replace(/^[_]+/, '');
+      underscore = underscore.replace(/[_]+$/, '');
+
+      return underscore;
+    }
+
+
+    /**
+     * Set as caps only the first letter of each word.
+     * 'ignore_single_letters' will tell if single letter elements are word or not.
+     * @examples:
+     *     capitalize()                                         =>  ""
+     *     capitalize("")                                       =>  ""
+     *     capitalize("h")                                      =>  "H"
+     *     capitalize("h", true)                                =>  "h"
+     *     capitalize("11", true)                               =>  "11"
+     *     capitalize("  $%^&| @ Once      upon a   time   |")  =>  "  $%^&| @ Once      Upon A   Time   |"
+     */
+    function capitalize(str, ignore_single_letters) {
+
+        /*Input String validation*/
+        if (typeof str !== 'string' || str.length == 0) return '';
+
+        /*Normally we'll capitalize all non-space string elements*/
+        if (typeof ignore_single_letters !== 'boolean') ignore_single_letters = false;
+
+
+        var
+        words  = str.match(/\S+/g) || [],
+        spaces = str.match(/\s+/g) || [];
+
+        /*Capitalize all 'words' elements*/
+        for (var i=0; i < words.length; ++i) {
+            var word = words[i];
+
+            if (word.length === 1 && ignore_single_letters) continue;
+
+            words[i] = word.substr(0, 1).toUpperCase() + word.substr(1).toLowerCase();
+        }
+
+
+        var
+        start_element_preorder = (str[0] === ' ')*1,
+        capitalized_string     = '',
+        word_i                 = 0,
+        space_i                = 0,
+        total_elements         = words.length + spaces.length;
+
+        /*Combine the final string from both space and non-space elements by alternative pushing*/
+        for (var total_i=0; total_i < total_elements; ++total_i) {
+            if ((total_i + start_element_preorder) % 2) {
+                capitalized_string += spaces[ space_i++ ];
+            } else {
+                capitalized_string += words[ word_i++ ];
+            }
+        }
+
+        return capitalized_string;
+    }
+
+
+
+    /**
+     * Common function to iterate through an Array or an Object of elements.
+     * If the callback function return false - iteration will be stopped.
      * 
-     * @param  {Object}    obj       JSON object or an array which we can use for iteration
-     * @param  {Function}  callback  The notification function which will be sent pairs of data from the incoming obj
-     * @return {Boolean}             Tells if there were a looping or not
+     * @param  {Object}    obj       JSON object or an Array which we can use for iteration
+     * @param  {Function}  callback  The notification function which will be sent pairs of data from the incoming 'obj'
+     * @return {Boolean}             Tells if there were an iteration looping or not
      */
     /*NOTE: It is important to remember that looping using this function will not brake "the sync model of events"
-            since we have not used any async function to paralle the loop
+            since we have not used any async function while iterating.
     */
     function each(obj, callback) {
 
         /*Immediately exit from the function if any of the mandatory arguments is missing*/
-        if (typeof callback != 'function') return false;
         if (typeof obj      != 'object'  ) return false;
+        if (typeof callback != 'function') return false;
 
 
         /*Determine an Array or an Object*/
         if (obj instanceof Array) {
 
             /*Cache common loop elements*/
+            /*NOTE: Caching 'obj.length' will prevent iterating over newly added elements,
+                    which will help keeping this function as close as possible to 'Array.prototype.forEach'
+            */
             var
             i       = 0,
             length  = obj.length,
             element = obj[i];
          
-            /*Go through all Array elements and send them back to the callback function as an index - element pair*/
-            for (; i < length; element = obj[i]) {
+            /*Go through all Array elements and send them back to the callback function as an element-index pair*/
+            for (; i < length; element = obj[++i]) {
 
-                /*Exit from the loop if the callback explicitly ask for it*/
-                if (callback(element, i++, obj) === false) break;
+                /*Be sure that the element we're attempting to iterate over still exists*/
+                if (i in obj) {
+
+                    /*Exit from the loop if the callback explicitly ask for it*/
+                    if (callback(element, i, obj) === false) break;
+                }
             }
 
         } else {
@@ -330,6 +636,14 @@
 
         return function (variable) {
 
+            /*Quick check for common "empty" vars*/
+            if (variable === ''  ) return '';
+            if (variable === []  ) return [];
+            if (variable === {}  ) return {};
+            if (variable === null) return null;
+            if (variable === NaN ) return NaN;
+
+
             /*Since this function is recursive, it's important to recreate the cloned variable on every call*/
             var cloned_var = {};
           
@@ -337,17 +651,14 @@
             if (typeof variable == 'object') {
 
                 /*Check if we need to recreate an Array or an Object*/
-                if (variable instanceof Array) {
-                    cloned_var = variable.slice(0);
+                cloned_var = variable instanceof Array ? [] : {};
 
-                } else {
-                    cloned_var = {};
+                /*NOTE: Array.slice() will copy-by-address all array values*/
 
-                    /*Go through each variable key - value pairs and recursively clone them*/
-                    each(variable, function (value, key) {
-                        cloned_var[key] = clone(value);
-                    });
-                }
+                /*Go through each variable key - value pairs and recursively clone them*/
+                each(variable, function (value, key) {
+                    cloned_var[key] = clone(value);
+                });
 
             } else if (typeof variable == 'function') {
 
@@ -914,42 +1225,50 @@
 
     /*List of all externally accessed functionalities*/
     var utils = {
-        log               : log,
+        log                  : log,
 
-        trim              : trim,
-        normalize         : normalize,
-        toString          : toString,
-        clampString       : clampString,
+        trim                 : trim,
+        normalize            : normalize,
+        toString             : toString,
+        clampString          : clampString,
+        camelCaseToUnderscore: camelCaseToUnderscore,
+        capitalize           : capitalize,
 
-        clampNumber       : clampNumber,
-        roundAfterPoint   : roundAfterPoint,
-        isNumber          : isNumber,
-        isInteger         : isInteger,
-        setDigits         : setDigits,
+        clampNumber          : clampNumber,
+        roundAfterPoint      : roundAfterPoint,
+        isNumber             : isNumber,
+        isFloat              : isFloat,
+        isInteger            : isInteger,
+        setDigits            : setDigits,
+        greatestCommonDivisor: greatestCommonDivisor,
+        floatToFraction      : floatToFraction,
+        getPowerLog          : getPowerLog,
+        convertNumberBase    : convertNumberBase,
 
-        each              : each,
-        clone             : clone,
+        each                 : each,
+        clone                : clone,
 
-        toArray           : toArray,
-        objectLength      : objectLength,
+        toArray              : toArray,
+        objectLength         : objectLength,
+        JSON_parse           : JSON_parse,
 
-        formatDate        : formatDate,
-        minutesLimitedTime: minutesLimitedTime,
-        hoursLimitedTime  : hoursLimitedTime,
-        timezone          : timezone,
-        daylightSavingTime: daylightSavingTime,
+        formatDate           : formatDate,
+        minutesLimitedTime   : minutesLimitedTime,
+        hoursLimitedTime     : hoursLimitedTime,
+        timezone             : timezone,
+        daylightSavingTime   : daylightSavingTime,
 
-        bind              : bind,
-        extend            : extend,
-        isEmpty           : isEmpty,
-        isEqual           : isEqual,
-        debounce          : debounce,
-        eventToKey        : eventToKey,
+        bind                 : bind,
+        extend               : extend,
+        isEmpty              : isEmpty,
+        isEqual              : isEqual,
+        debounce             : debounce,
+        eventToKey           : eventToKey,
 
-        getHrefPart       : getHrefPart,
-        updateElementStyle: updateElementStyle
-    }
- 
+        getHrefPart          : getHrefPart,
+        updateElementStyle   : updateElementStyle
+    };
+
 
     /*Determine if we need to make an export for Node.js or common browser 'window' client*/
     var export_object = typeof module == 'object' && typeof module.exports == 'object' ? module.exports : (typeof window == 'object' ? (window.utils = {}) : {});
