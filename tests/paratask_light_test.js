@@ -25,10 +25,10 @@
 
 
   var
-  task_counter_1 = 10000000,
-  task_counter_2 = 10000000,
-  task_counter_3 = 1000,
-  task_counter_4 = 1000;
+  task_counter_1 = 1000000000,
+  task_counter_2 = 1000000000,
+  task_counter_3 = 10,
+  task_counter_4 = 10;
 
 
   log('');
