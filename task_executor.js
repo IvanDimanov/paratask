@@ -42,39 +42,57 @@ process.on('message', function (message) {
   context     = shared_data_json.context;
 
 
+  /*Find the name of the function that will to be called when the task is completed as a first and only fork function argument*/
+  var
+  _1st_opening_bracket_index = fork_string.indexOf('('),
+  _1st_closing_bracket_index = fork_string.indexOf(')'),
+  callback_name              = fork_string.substring( _1st_opening_bracket_index+1, _1st_closing_bracket_index );
+  callback_name              = utils.trim( callback_name );
+
+  /*Secure a function that we can send the final result to*/
+  if (
+    !callback_name.length       ||
+    ~callback_name.indexOf(' ') ||
+    ~callback_name.indexOf(',')
+  ) {
+    process.send({
+      error: 'Fork function below must have a "callback" variable as its only argument:\n'+ fork_string
+    });
+    return;
+  }
+
+
   /*
-    Create an IIFE where we can extend the 'this' global var with all context dependencies needed.
-    Please note that the use of 'use strict' will disallow 'this' global var.
+    The logic below will set all 'context' arguments in 2 list,
+    where the 1st list is a {string} with all of the arguments' names,
+    and the 2nd list is an {array} of all arguments' values.
+    The point of this is later they to be used as new arguments on the Fork function
+    so the same function can use them freely in its body
   */
+  var fork_arguments_names  = '';
+  var fork_arguments_values = [];
   (function () {
 
-    /*Import all context dependencies in the current 'this' context*/
-    utils.each( context, function (context_value, context_key) {
-      this[ context_key ] = context_value;
+    /*All all dependencies mentioned in 'context'*/
+    utils.each( context, function (value, name) {
+      fork_arguments_names += name +', ';
+      fork_arguments_values.push( value );
     });
- 
 
-    /*Find the name of the function that will to be called when the task is completed as a first fork function argument*/
-    var
-    _1st_comma_index           = fork_string.indexOf(','),
-    _1st_opening_bracket_index = fork_string.indexOf('('),
-    _1st_closing_bracket_index = fork_string.indexOf(')'),
-    closing_arguments_index    = _1st_comma_index > 0 ? Math.min(_1st_comma_index, _1st_closing_bracket_index) : _1st_closing_bracket_index,
-    callback_name              = fork_string.substring( _1st_opening_bracket_index+1, closing_arguments_index );
-    callback_name              = utils.trim( callback_name );
- 
-    /*
-      In respect to the Node callbacks usage (http://docs.nodejitsu.com/articles/getting-started/control-flow/what-are-callbacks),
-      we'll return the possible error state and calculated result to the parent process
-    */
-    this[ callback_name ] = function (error, result) {
+    /*Set mandatory "callback" function as last argument*/
+    fork_arguments_names += callback_name;
+    fork_arguments_values.push(function (error, result) {
       process.send({
-        error : error, 
+        error : error,
         result: result
        });
-    };
- 
-    /*Execute the task body function in the updated context of 'this'*/
-    eval( fork_body );
+    });
   })();
+
+
+  /*
+    Execute the Fork body function
+    with all of its 'context' variables as newly added arguments
+  */
+  new Function( fork_arguments_names, fork_body ).apply( null, fork_arguments_values );
 });
