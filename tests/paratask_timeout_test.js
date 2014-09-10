@@ -29,37 +29,37 @@
 
   paratask([{
     fork: function (callback) {
-      log('Task 1 - start');
+      console.log('Task 1 - start');
 
       setTimeout(function () {
-        log('Task 1 - complete');
+        console.log('Task 1 - complete');
         callback(null, 11);
       }, 5000);
     }
   }, {
     fork: function (callback) {
-      log('Task 2 - start');
+      console.log('Task 2 - start');
 
       setTimeout(function () {
-        log('Task 2 - complete');
+        console.log('Task 2 - complete');
         callback(null, 22);
       }, 4000);
     }
   }, {
     fork: function (callback) {
-      log('Task 3 - start');
+      console.log('Task 3 - start');
 
       setTimeout(function () {
-        log('Task 3 - complete');
+        console.log('Task 3 - complete');
         callback(null, 33);
       }, 3000);
     }
   }, {
     fork: function (callback) {
-      log('Task 4 - start');
+      console.log('Task 4 - start');
 
       setTimeout(function () {
-        log('Task 4 - complete');
+        console.log('Task 4 - complete');
         callback(null, 44);
       }, 2000);
     }
