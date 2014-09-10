@@ -69,7 +69,11 @@ function paratask(tasks, finalCallback) {
   /*Please note that setting an empty folder by removing & creating will cause permission issue*/
   function removeAllFilesFromSharedFolder() {
     utils.each( fs.readdirSync( SHARED_DATA_FOLDER_PATH ), function (file_path) {
-      fs.unlinkSync( SHARED_DATA_FOLDER_PATH + file_path );
+
+      /*Leave only the readme file so users can still know what the folders is used for*/
+      if (!~file_path.toLowerCase().indexOf('readme')) {
+        fs.unlinkSync( SHARED_DATA_FOLDER_PATH + file_path );
+      }
     });
   }
 
