@@ -66,22 +66,6 @@ function paratask(tasks, finalCallback) {
   total_uncompleted_tasks = utils.objectLength( tasks );
 
 
-  /*Please note that setting an empty folder by removing & creating will cause permission issue*/
-  function removeAllFilesFromSharedFolder() {
-    utils.each( fs.readdirSync( SHARED_DATA_FOLDER_PATH ), function (file_path) {
-
-      /*Leave only the readme file so users can still know what the folders is used for*/
-      if (!~file_path.toLowerCase().indexOf('readme')) {
-        fs.unlinkSync( SHARED_DATA_FOLDER_PATH + file_path );
-      }
-    });
-  }
-
-
-  /*Set clear all previously used files*/
-  removeAllFilesFromSharedFolder();
-
-
   /*Common function for killing any spawn child process and removing any records assign with it*/
   function killProcess(child_process_id) {
 
@@ -112,7 +96,7 @@ function paratask(tasks, finalCallback) {
             The huge challenge is to create a "global context namespace" where the 'fork()'
             will "live" with all of its 'context' dependencies (external for 'fork()' functions and variables).
     */
-    shared_data_file_paths[ child_process_id ] = SHARED_DATA_FOLDER_PATH + new Date().getTime() +'_' + child_process_id +'.json';
+    shared_data_file_paths[ child_process_id ] = SHARED_DATA_FOLDER_PATH + new Date().getTime() +'_'+ child_process_id +'_'+ Math.random() +'.json';
     var shared_data_json = {
       fork_string: task.fork.toString(),
       context    : task.context
@@ -154,9 +138,6 @@ function paratask(tasks, finalCallback) {
     child_processes[ child_process_id ].on('close', function () {
       if (!--total_uncompleted_tasks) {
         finalCallback( error, results );
-
-        /*Secure clean space after work*/
-        removeAllFilesFromSharedFolder();
       }
     });
 
