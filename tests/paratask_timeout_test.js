@@ -18,7 +18,7 @@
 
 
   var
-  paratask = require('../index.js'),
+  paratask = require('../lib/index.js'),
 
   utils = require('../utils'),
   log   = utils.log;

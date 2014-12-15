@@ -3,7 +3,7 @@
 */
 'use strict';
 
-var paratask = require('../index.js');
+var paratask = require('../lib/index.js');
 
 
 module.exports = {
