@@ -20,7 +20,7 @@
   var
   paratask = require('../lib/index.js'),
 
-  utils = require('../utils'),
+  utils = require('../lib/utils'),
   log   = utils.log;
 
 

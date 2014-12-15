@@ -19,7 +19,7 @@
 
   var
   async = require('async'),
-  utils = require('../utils'),
+  utils = require('../lib/utils'),
   log   = utils.log;
 
 

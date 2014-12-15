@@ -16,7 +16,7 @@
   });
 
 
-  var utils = require('../utils');
+  var utils = require('../lib/utils');
   var log   = utils.log;
 
 
