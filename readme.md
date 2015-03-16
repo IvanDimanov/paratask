@@ -16,7 +16,7 @@ npm install paratask
 or by getting it from [this repo](https://github.com/IvanDimanov/paratask).
 
 ## Dependencies
-Paratask uses only general Node.js modules that do not need additional installation: `fs`, `child_process`, and `domain`.
+Paratask uses only general Node.js modules that do not need additional installation: `fs` and `child_process`.
 
 
 ## Examples
