@@ -1,11 +1,11 @@
 {
   "name": "paratask",
-  "version": "1.6.6",
+  "version": "1.6.7",
   "author": {
     "name": "Ivan Dimanov",
     "email": "mail@idimanov.com"
   },
-  "description": "Paratask is a tool that will execute your back-end JavaScript code in parallel using the full potential of multi-process programming. In contrast to asynchronous task management, Paratask will create a child Node.js/io.js process in which your task will \"live\".",
+  "description": "Paratask is a tool that will execute your back-end JavaScript code in parallel using the full potential of multi-process programming. In contrast to asynchronous task management, Paratask will create a child Node.js/io.js process in which your task will 'live'.",
   "contributors": [
     {
       "name": "Ivan Dimanov",

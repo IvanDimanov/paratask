@@ -3,7 +3,7 @@
 [![NPM version](https://badge.fury.io/js/paratask.png)](http://badge.fury.io/js/paratask)
 
 Paratask is a tool that will execute your back-end JavaScript code in __parallel__ using the full potential of multi-process programming.
-In contrast to asynchronous task management, Paratask will create a child Node.js/io.js process in which your task will "live".
+In contrast to asynchronous task management, Paratask will create a child Node.js/io.js process in which your task will 'live'.
 
 __Warning:__ This means that your task function will be able to get only a non-functional context dependencies. More into in the examples below.
 
