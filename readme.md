@@ -1,9 +1,9 @@
-# Paratask - Node.js Parallel Tasks Manager
+# Paratask - Node.js/io.js Parallel Tasks Manager
 [![Build Status](https://secure.travis-ci.org/IvanDimanov/paratask.png?branch=master)](http://travis-ci.org/IvanDimanov/paratask)
 [![NPM version](https://badge.fury.io/js/paratask.png)](http://badge.fury.io/js/paratask)
 
-Paratask is a tool that will execute your Node.js code in __parallel__ using the full potential of multi-process programming.
-In contrast to asynchronous task management, Paratask will create a child Node.js process in which your task function will 'live'.
+Paratask is a tool that will execute your back-end JavaScript code in __parallel__ using the full potential of multi-process programming.
+In contrast to asynchronous task management, Paratask will create a child Node.js/io.js process in which your task will "live".
 
 __Warning:__ This means that your task function will be able to get only a non-functional context dependencies. More into in the examples below.
 
@@ -16,7 +16,7 @@ npm install paratask
 or by getting it from [this repo](https://github.com/IvanDimanov/paratask).
 
 ## Dependencies
-Paratask uses only general Node.js modules that do not need additional installation: `fs` and `child_process`.
+Paratask uses only native Node.js/io.js modules that do not need additional installation: `fs` and `child_process`.
 
 
 ## Examples

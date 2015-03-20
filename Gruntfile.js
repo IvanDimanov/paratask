@@ -8,11 +8,7 @@ module.exports = function (grunt) {
   /*Set only the Node.js unit testing module*/
   grunt.initConfig({
     nodeunit: {
-      files: [
-        'build_tests/readme_examples_test.js',
-        'build_tests/input_validation_test.js',
-        'build_tests/execution_error_test.js'
-      ],
+      all: ['build_tests/*_test.js']
     }
   });
 };
