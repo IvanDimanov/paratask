@@ -83,5 +83,44 @@ module.exports = {
       /*Mark the test as completed*/
       test.done();
     });
+  },
+
+
+  'Test the 3rd example from the "readme.md"': function (test) {
+
+    /*Set the assertions needed to check the error state*/
+    test.expect(10);
+
+    /*Follow the 3rd example from the 'readme.md'*/
+
+    var task = {
+      fork: function (callback) {
+        var count = 100000;
+        while (--count);
+        callback(null, count);
+      }
+    };
+
+    var forks = paratask([ task, task, task ], function (error, results) {
+
+      /*Verify task performance*/
+      test.equal( error         ,      null, 'No errors should occur during this test');
+      test.equal( results.length,         3, 'There should be exactly 3 task results');
+      test.equal( results[0]    , undefined, '1st result should be "undefined" since the process was killed');
+      test.equal( results[1]    ,         0, '2nd result should countdown 0');
+      test.equal( results[2]    ,         0, '3rd result should countdown 0');
+
+
+      /*Mark the test as completed*/
+      test.done();
+    });
+
+
+    test.deepEqual( forks[0].killed, false, '1st process should be initially "alive"');
+    test.deepEqual( forks[0].kill(),  true, '1st process should be correctly "killed"');
+    test.deepEqual( forks[0].killed,  true, '1st process should remain "killed"');
+
+    test.deepEqual( typeof forks[1].pid, 'number', '2nd process have a correct PID');
+    test.deepEqual( typeof forks[2].pid, 'number', '3rd process have a correct PID');
   }
 };
