@@ -93,35 +93,6 @@ paratask([ task_1, task_2 ], function (error, results) {
 ```
 
 
-### Return forks
-`paratask` will fork all of your `tasks` as [Child Processes](https://nodejs.org/api/child_process.html).
-You can access each fork properties (like `pid`, `killed`, etc.) as follows:
-
-```javascript
-var paratask = require('paratask');
-
-var task = {
-  fork: function (callback) {
-    var count = 100000;
-    while (--count);
-    callback(null, count);
-  }
-};
-
-var forks = paratask([ task, task, task ], function (error, results) {
-  console.log( error   );  // null
-  console.log( results );  // [ , 0, 0 ], 1st task was interrupted with 'kill()' before completion
-});
-
-console.log( forks[0].killed );  // false
-forks[0].kill();
-console.log( forks[0].killed );  // true
-
-console.log( forks[1].pid );  // 29199
-console.log( forks[2].pid );  // 29201
-```
-
-
 ## Comparison tests
 A palette of comparison tests between `paratask()`, `async.parallel()`, and `process.nextTick()` are available in `./tests` folder.
 
