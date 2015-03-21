@@ -2,8 +2,8 @@
 [![Build Status](https://secure.travis-ci.org/IvanDimanov/paratask.png?branch=master)](http://travis-ci.org/IvanDimanov/paratask)
 [![NPM version](https://badge.fury.io/js/paratask.png)](http://badge.fury.io/js/paratask)
 
-Paratask is a tool that will execute your back-end JavaScript code in __parallel__ using the full potential of multi-process programming.
-In contrast to asynchronous task management, Paratask will create a child Node.js/io.js process in which your task will 'live'.
+Paratask is a tool that will execute your Node.js code in __parallel__ using the full potential of multi-process programming.
+In contrast to asynchronous task management, Paratask will create a child Node.js/io.js process in which your task function will 'live'.
 
 __Warning:__ This means that your task function will be able to get only a non-functional context dependencies. More into in the examples below.
 
@@ -20,7 +20,7 @@ Paratask uses only native Node.js/io.js modules that do not need additional inst
 
 
 ## Examples
-Both `task_1` and `task_2` will fork a Node.js process,
+Both `task_1` and `task_2` will fork a new Node.js process,
 execute their functions and when both call `callback()`,
 the final error state and results will be printed in the console.
 
@@ -58,7 +58,7 @@ paratask([ task_1, task_2 ], function (error, results) {
 ```
 
 
-Both `task_1` and `task_2` will fork a Node.js process but
+Both `task_1` and `task_2` will fork a new Node.js process but
 from the moment when `task_2` call `callback('Error message')`
 both processes will be killed and the final callback will be executed,
 printing the 1st occurred error and the results array in the moment of error occurrence.
