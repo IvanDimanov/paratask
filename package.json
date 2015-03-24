@@ -1,6 +1,6 @@
 {
   "name": "paratask",
-  "version": "1.7.8",
+  "version": "1.7.9",
   "author": {
     "name": "Ivan Dimanov",
     "email": "mail@idimanov.com"
@@ -18,8 +18,8 @@
   },
   "main": "./lib/index.js",
   "engines": {
-    "node": ">=0.8",
-    "iojs": ">=1.0"
+    "node": ">= 0.8.0",
+    "iojs": ">= 1.0.0"
   },
   "repository": {
     "type": "git",
