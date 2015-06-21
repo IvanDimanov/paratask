@@ -16,22 +16,22 @@ module.exports = {
 
     var task_1 = {
       fork: function (callback) {
-        // Some calculation using the 'count' context var
+        // Some calculation using the 'count' scope var
         var result = count * 10;
         callback(null, result);
       },
-      context: {
+      scope: {
         count: 10
       }
     };
 
     var task_2 = {
       fork: function (callback) {
-        // Some calculation using the 'count' context var
+        // Some calculation using the 'count' scope var
         var result = count * 10;
         callback(null, result);
       },
-      context: {
+      scope: {
         count: 20
       }
     };
@@ -41,8 +41,8 @@ module.exports = {
       /*Verify task performance*/
       test.equal( error         , null, 'No errors should occur during this test');
       test.equal( results.length,    2, 'There should be exactly 2 task results');
-      test.equal( results[0]    ,  100, '1st result should be ten times greater than "task_1.context.count"');
-      test.equal( results[1]    ,  200, '2nd result should be ten times greater than "task_2.context.count"');
+      test.equal( results[0]    ,  100, '1st result should be ten times greater than "task_1.scope.count"');
+      test.equal( results[1]    ,  200, '2nd result should be ten times greater than "task_2.scope.count"');
 
       /*Mark the test as completed*/
       test.done();
@@ -59,9 +59,8 @@ module.exports = {
 
     var task_1 = {
       fork: function (callback) {
-        var
-        count     = 100000,
-        factorial = 1;
+        var count     = 100000;
+        var factorial = 1;
 
         while (--count) factorial *= count;
 
@@ -95,7 +94,7 @@ module.exports = {
 
     var task = {
       fork: function (callback) {
-        var count = 100000;
+        var count = 1000000000;
         while (--count);
         callback(null, count);
       }

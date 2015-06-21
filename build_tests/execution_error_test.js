@@ -40,7 +40,7 @@ module.exports = {
     };
 
     paratask([ task ], function (error, results) {
-      test.equal( error.indexOf('SyntaxError'), 0, '"JSON.parse()" of "undefined" in callback triggers "SyntaxError"');
+      test.equal( error.stack.indexOf('SyntaxError'), 0, '"JSON.parse()" of "undefined" in callback triggers "SyntaxError"');
 
       /*Mark the test as completed*/
       test.done();
@@ -62,7 +62,7 @@ module.exports = {
     };
 
     paratask([ task ], function (error, results) {
-      test.equal( error.indexOf('SyntaxError'), 0, '"JSON.parse()" of "undefined" in "setTimeout()" in callback triggers "SyntaxError"');
+      test.equal( error.stack.indexOf('SyntaxError'), 0, '"JSON.parse()" of "undefined" in "setTimeout()" in callback triggers "SyntaxError"');
 
       /*Mark the test as completed*/
       test.done();

@@ -41,7 +41,7 @@ module.exports = {
     test.expect(1);
 
     paratask([''], function (error, results) {
-      test.equal( error.indexOf('TypeError'), 0, 'Called with task as empty string "" returns a "TypeError"');
+      test.equal( error.stack.indexOf('TypeError'), 0, 'Called with task as empty string "" returns a "TypeError"');
 
       /*Mark the test as completed*/
       test.done();
@@ -55,7 +55,7 @@ module.exports = {
     test.expect(1);
 
     paratask([{}], function (error, results) {
-      test.equal( error.indexOf('TypeError'), 0, 'Called with task as empty object {} returns a "TypeError"');
+      test.equal( error.stack.indexOf('TypeError'), 0, 'Called with task as empty object {} returns a "TypeError"');
 
       /*Mark the test as completed*/
       test.done();
@@ -69,11 +69,11 @@ module.exports = {
     test.expect(1);
 
     var task = {
-      context: {}
+      scope: {}
     };
 
     paratask([ task ], function (error, results) {
-      test.equal( error.indexOf('TypeError'), 0, 'Called with missing "fork" function returns a "TypeError"');
+      test.equal( error.stack.indexOf('TypeError'), 0, 'Called with missing "fork" function returns a "TypeError"');
 
       /*Mark the test as completed*/
       test.done();
@@ -88,11 +88,11 @@ module.exports = {
 
     var task = {
       fork: '',
-      context: {}
+      scope: {}
     };
 
     paratask([ task ], function (error, results) {
-      test.equal( error.indexOf('TypeError'), 0, 'Called with invalid "fork" function returns a "TypeError"');
+      test.equal( error.stack.indexOf('TypeError'), 0, 'Called with invalid "fork" function returns a "TypeError"');
 
       /*Mark the test as completed*/
       test.done();
@@ -100,7 +100,7 @@ module.exports = {
   },
 
 
-  'calling "paratask()" with invalid "context" function': function (test) {
+  'calling "paratask()" with invalid "scope" function': function (test) {
 
     /*Set the total assertions expected from this test*/
     test.expect(1);
@@ -109,11 +109,11 @@ module.exports = {
       fork: function (callback) {
         callback();
       },
-      context: ''
+      scope: ''
     };
 
     paratask([ task ], function (error, results) {
-      test.equal( error.indexOf('TypeError'), 0, 'Called with invalid "context" function returns a "TypeError"');
+      test.equal( error.stack.indexOf('TypeError'), 0, 'Called with invalid "scope" function returns a "TypeError"');
 
       /*Mark the test as completed*/
       test.done();
