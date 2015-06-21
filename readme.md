@@ -7,6 +7,8 @@ In contrast to asynchronous task management, Paratask will create a child Node/i
 
 __Note:__ Scope dependency injection is at your service. More into in the examples below.
 
+__Note:__ This modules uses ES5 "callback" style. If you're more into the __Promises/A+__ standard you can use [paratask-promises](https://github.com/IvanDimanov/paratask-promises)
+
 
 ## Install
 You can install Paratask with the Node Package Manager:
@@ -14,6 +16,7 @@ You can install Paratask with the Node Package Manager:
 npm install paratask
 ```
 or by getting it from [this repo](https://github.com/IvanDimanov/paratask).
+
 
 ## Dependencies
 Paratask uses only native Node/io.js modules that do not need additional installation: `fs` and `child_process`.
